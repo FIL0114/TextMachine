@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -18,31 +19,38 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ListView;
 import android.widget.Toast;
 import android.database.sqlite.*;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private static final int SEND_SMS = 123 ;
     Context mContext;
+    ListView listview;
+    @Override
+    protected void onResume() {
+        super.onResume();
 
+        final MyAdapter adapter = new MyAdapter(this,R.layout.row_alarm, MyDb.getInstance(getApplicationContext()).getAllAlarm());
+        listview.setAdapter(adapter);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
         mContext = this.getApplicationContext();
         setContentView(R.layout.activity_main);
-
+        listview = (ListView) findViewById(R.id.list);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+              Intent i = new Intent(MainActivity.this, NewAlarm.class);
+              startActivity(i);
             }
         });
 
@@ -77,6 +85,26 @@ public class MainActivity extends AppCompatActivity {
                 startService(mServiceIntent);
             }
         }
+
+
+
+       //// String[] values = new String[] { "Android", "iPhone", "WindowsMobile",
+       //         "Blackberry", "WebOS", "Ubuntu", "Windows7", "Max OS X",
+       //         "Linux" };
+       // String tel = "774333444";
+       // ArrayList<AlarmData> result = new ArrayList<AlarmData>();
+
+       // for (int i = 0; i < values.length; ++i) {
+       //     AlarmData a =new AlarmData(0);
+       //     a.description = values[i];
+       //     a.tel = tel;
+      //      result.add(a);
+       // }
+      //  result.add( new AlarmData(0));
+        final MyAdapter adapter = new MyAdapter(this,R.layout.row_alarm, MyDb.getInstance(getApplicationContext()).getAllAlarm());
+        listview.setAdapter(adapter);
+
+
     }
 
     private boolean isMyServiceRunning(Class<?> serviceClass) {

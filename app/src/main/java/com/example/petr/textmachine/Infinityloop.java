@@ -4,6 +4,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.icu.util.Calendar;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -12,13 +13,15 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.Console;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
 
 public class Infinityloop extends Service {
-    Context applicationContext;
+    static Context applicationContext;
     public int counter=0;
     public Infinityloop(Context context) {
         super();
@@ -54,8 +57,8 @@ public class Infinityloop extends Service {
         //initialize the TimerTask's job
         initializeTimerTask();
 
-        //schedule the timer, to wake up every 1 second
-        timer.schedule(timerTask, 1000, 1000); //
+        //schedule the timer, to wake up every 60 second
+        timer.schedule(timerTask, 10000, 60000);
     }
 
     /**
@@ -73,7 +76,18 @@ public class Infinityloop extends Service {
                     }
                 });
 
-                sendSMS("+420722059820", "test");
+                final java.util.Calendar c = java.util.Calendar.getInstance();
+                int hour = c.get(java.util.Calendar.HOUR_OF_DAY);
+                int minute = c.get(java.util.Calendar.MINUTE);
+                int dayOfWeek = c.get(java.util.Calendar.DAY_OF_WEEK);
+                ArrayList<AlarmData> toExecute = MyDb.getInstance(getApplication().getApplicationContext()).getAlarmsToExecute(hour,minute,dayOfWeek);
+                if (toExecute.size()!=0) {
+                    for (AlarmData al:toExecute) {
+                        Log.i("Textmachne", "tel: "+al.tel+" text: "+al.smsText);
+                        sendSMS(al.tel,al.smsText);
+                    }
+
+                }
             }
         };
     }
