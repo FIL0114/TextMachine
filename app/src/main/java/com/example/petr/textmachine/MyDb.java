@@ -225,7 +225,7 @@ public class MyDb extends SQLiteOpenHelper {
         ArrayList<AlarmData> array_list = new ArrayList<AlarmData>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor res =  db.rawQuery( "select * from "   +TABLE_NAME +   " Where "    +COLUMN_ENABLE_NAME+   "=1 and "   +COLUMN_HOUR_NAME+ " = "   +hour + " and "+COLUMN_MINUTE_NAME+" = "+min +" and "+ day , null );
+        Cursor res =  db.rawQuery( "select *  from "   +TABLE_NAME +   " Where "    +COLUMN_ENABLE_NAME+   "=1 and "   +COLUMN_HOUR_NAME+ " = "   +hour + " and "+COLUMN_MINUTE_NAME+" = "+min +" and "+ day , null );
         if (res.getCount()>0)
             res.moveToFirst();
 
