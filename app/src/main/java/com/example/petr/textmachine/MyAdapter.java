@@ -80,7 +80,9 @@ public class MyAdapter extends ArrayAdapter<AlarmData> {
         str +=entry.sunday?"Ne ":"";
 
         holder.dates.setText( str);
-        holder.time.setText(entry.hour + ":"+entry.min);
+        String h = String.format("%02d" , entry.hour);
+        String m = String.format("%02d" , entry.min);
+        holder.time.setText(h +":"+m);
         holder.enabled.setChecked(entry.enable);
 
         row.setTag(holder);

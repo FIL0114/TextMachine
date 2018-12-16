@@ -44,12 +44,12 @@ public class Infinityloop extends Service {
         //Intent broadcastIntent = new Intent(this, SensorRestarterBroadcastReceiver.class);
 
        // sendBroadcast(broadcastIntent);
-        stoptimertask();
+       // stoptimertask();
     }
 
     private Timer timer;
     private TimerTask timerTask;
-    long oldTime=0;
+
     public void startTimer() {
         //set a new Timer
         timer = new Timer();
@@ -58,7 +58,7 @@ public class Infinityloop extends Service {
         initializeTimerTask();
 
         //schedule the timer, to wake up every 60 second
-        timer.schedule(timerTask, 10000, 60000);
+        timer.schedule(timerTask, 1000, 6000);
     }
 
     /**
