@@ -58,7 +58,7 @@ public class Infinityloop extends Service {
         initializeTimerTask();
 
         //schedule the timer, to wake up every 60 second
-        timer.schedule(timerTask, 1000, 6000);
+        timer.schedule(timerTask, 10000, 60000);
     }
 
     /**
