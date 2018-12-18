@@ -1,18 +1,23 @@
 package com.example.petr.textmachine;
 
 import android.app.Activity;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Telephony;
 import android.support.annotation.Nullable;
 import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AppCompatActivity;
+import android.telephony.SmsManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
+
+import java.util.ArrayList;
 
 public class NewAlarm extends AppCompatActivity {
     DialogFragment newFragment;
@@ -28,6 +33,7 @@ public class NewAlarm extends AppCompatActivity {
     EditText telET;
     EditText smsET;
     Button saveBT;
+    Button sendNow;
     TextView timeText;
     int editedAlarmId;
     AlarmData editedAlarm;
@@ -48,6 +54,7 @@ public class NewAlarm extends AppCompatActivity {
         telET = (EditText)findViewById(R.id.editText) ;
         smsET = (EditText)findViewById(R.id.editText2) ;
         saveBT = (Button)findViewById(R.id.button10);
+        sendNow = (Button) findViewById(R.id.sendNow);
         timeText = (TextView)findViewById(R.id.TimeText);
         deleteAlarm = (Button)findViewById(R.id.btnDeleteAlarm);
         Intent intent = getIntent();
@@ -68,6 +75,25 @@ public class NewAlarm extends AppCompatActivity {
             startActivity(i);
         }
     });
+
+    sendNow.setOnClickListener(new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            String text = smsET.getText().toString();
+            String tel = telET.getText().toString();
+
+            if(tel.length()<9 || tel.length() >14){
+
+                Toast toast = Toast.makeText(mContext, "spatne cislo", Toast.LENGTH_SHORT);
+                toast.show();
+                return;
+            }
+
+            sendSMS(tel,text);
+
+        }
+    });
+
 
         saveBT.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -160,11 +186,37 @@ public class NewAlarm extends AppCompatActivity {
         descriptionET.setText(data.description);
         telET.setText(data.tel);
         smsET.setText(data.smsText);
-        saveBT.setText("Upravit");
+        saveBT.setText("Uprav");
         timeText.setText(data.hour+":"+data.min);
 
 
         return data;
+
+    }
+
+    private void sendSMS(String phoneNumber, String message) {
+        ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();
+        ArrayList<PendingIntent> deliveredPendingIntents = new ArrayList<PendingIntent>();
+
+        PendingIntent sentPI = PendingIntent.getBroadcast(getApplication().getApplicationContext(), 0,
+                new Intent(getApplication().getApplicationContext(), SmsSentReceiver.class), 0);
+        PendingIntent deliveredPI = PendingIntent.getBroadcast(getApplication().getApplicationContext(), 0,
+                new Intent(getApplication().getApplicationContext(), SmsDeliveredReceiver.class), 0);
+        try {
+            SmsManager sms = SmsManager.getDefault();
+            ArrayList<String> mSMSMessage = sms.divideMessage(message);
+            for (int i = 0; i < mSMSMessage.size(); i++) {
+                sentPendingIntents.add(i, sentPI);
+                deliveredPendingIntents.add(i, deliveredPI);
+            }
+            sms.sendMultipartTextMessage(phoneNumber, null, mSMSMessage,
+                    sentPendingIntents, deliveredPendingIntents);
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+            Toast.makeText(getBaseContext(), "SMS sending failed...",Toast.LENGTH_SHORT).show();
+        }
 
     }
 }

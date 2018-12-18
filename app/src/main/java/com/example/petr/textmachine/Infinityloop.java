@@ -3,8 +3,10 @@ package com.example.petr.textmachine;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.content.Intent;
 import android.icu.util.Calendar;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
@@ -13,7 +15,14 @@ import android.telephony.SmsManager;
 import android.util.Log;
 import android.widget.Toast;
 
+import java.io.BufferedWriter;
 import java.io.Console;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Timer;
@@ -22,11 +31,13 @@ import java.util.TimerTask;
 
 public class Infinityloop extends Service {
     static Context applicationContext;
-    public int counter=0;
+    public static int counter=0;
+    private static String path ;
     public Infinityloop(Context context) {
         super();
         Log.i("HERE", "here I am!");
         applicationContext  = context;
+        path = applicationContext.getFilesDir().toString();
     }
 
     public Infinityloop() {
@@ -69,27 +80,43 @@ public class Infinityloop extends Service {
             public void run() {
 
                 Log.i("in timer", "in timer ++++  "+ (counter++));
-                new Handler(Looper.getMainLooper()).post(new Runnable() {
-                    @Override
-                    public void run() {
-                        Toast.makeText(getApplication().getApplicationContext(), "in timer: +++ "+counter, Toast.LENGTH_SHORT);
-                    }
-                });
 
-                final java.util.Calendar c = java.util.Calendar.getInstance();
-                int hour = c.get(java.util.Calendar.HOUR_OF_DAY);
-                int minute = c.get(java.util.Calendar.MINUTE);
-                int dayOfWeek = c.get(java.util.Calendar.DAY_OF_WEEK);
-                ArrayList<AlarmData> toExecute = MyDb.getInstance(getApplication().getApplicationContext()).getAlarmsToExecute(hour,minute,dayOfWeek);
-                if (toExecute.size()!=0) {
-                    for (AlarmData al:toExecute) {
-                        Log.i("Textmachne", "tel: "+al.tel+" text: "+al.smsText);
-                        sendSMS(al.tel,al.smsText);
-                    }
+                appendLog("in timer: +++ "+counter);
 
+
+                //new Handler(Looper.getMainLooper()).post(new Runnable() {
+                //    @Override
+                //    public void run() {
+                //        Toast.makeText(getApplication().getApplicationContext(), "in timer: +++ "+counter, Toast.LENGTH_SHORT);
+                //    }
+                //});
+                try {
+                    final java.util.Calendar c = java.util.Calendar.getInstance();
+                    int hour = c.get(java.util.Calendar.HOUR_OF_DAY);
+                    int minute = c.get(java.util.Calendar.MINUTE);
+                    int dayOfWeek = c.get(java.util.Calendar.DAY_OF_WEEK);
+                    ArrayList<AlarmData> toExecute = MyDb.getInstance(getApplication().getApplicationContext()).getAlarmsToExecute(hour, minute, dayOfWeek);
+                    if (toExecute.size() != 0) {
+                        for (AlarmData al : toExecute) {
+                            Log.i("Textmachne", "tel: " + al.tel + " text: " + al.smsText);
+                            sendSMS(al.tel, al.smsText);
+                            appendLog("tel: " + al.tel + " text: " + al.smsText);
+                        }
+
+                    }
                 }
+                catch (Exception e )
+                {appendLog(e.toString());}
+
+
+
             }
         };
+    }
+    public void appendLog(String log)
+    {
+
+
     }
     private void sendSMS(String phoneNumber, String message) {
         ArrayList<PendingIntent> sentPendingIntents = new ArrayList<PendingIntent>();

@@ -231,8 +231,22 @@
             android:paddingTop="20dp">
 
             <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="bottom|left"
+                android:orientation="horizontal"
+                android:padding="20dp">
+
+                <Button
+                    android:id="@+id/sendNow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Odešli" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
                 android:gravity="bottom|center"
                 android:orientation="horizontal"
                 android:padding="20dp">
@@ -241,16 +255,9 @@
                     android:id="@+id/btnDeleteAlarm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Smazat"
+                    android:text="Smaž"
                     android:visibility="invisible" />
             </LinearLayout>
-
-            <Button
-                android:id="@+id/button3"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Uložit" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -261,9 +268,9 @@
 
                 <Button
                     android:id="@+id/button10"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Uložit" />
+                    android:text="Ulož" />
             </LinearLayout>
 
         </LinearLayout>
